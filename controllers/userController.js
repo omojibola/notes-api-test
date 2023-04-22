@@ -9,13 +9,17 @@ const User = require('../models/userModel');
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
-    res.status(400);
-    throw new Error('All fields are mandatory!');
+    res.status(400).json({
+      status: 'error',
+      message: 'All fields are necessary',
+    });
   }
   const userAvailable = await User.findOne({ email });
   if (userAvailable) {
-    res.status(400);
-    throw new Error('User already registered!');
+    res.status(400).json({
+      status: 'error',
+      message: 'User already exists',
+    });
   }
 
   //Hash password
@@ -27,14 +31,17 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    res
-      .status(201)
-      .json({ id: user.id, email: user.email, username: user.username });
+    res.status(201).json({
+      status: 'success',
+      message: 'User registered successfully,',
+      data: { id: user.id, email: user.email, username: user.username },
+    });
   } else {
-    res.status(400);
-    throw new Error('User data is not valid');
+    res.status(400).json({
+      status: 'error',
+      message: 'User data is not valid',
+    });
   }
-  res.json({ message: 'Register the user' });
 });
 
 //@desc Login user
@@ -44,8 +51,10 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(400);
-    throw new Error('All fields are mandatory!');
+    res.status(400).json({
+      status: 'error',
+      message: 'All fields are necessary',
+    });
   }
   try {
     const user = await User.findOne({ email });
@@ -64,14 +73,19 @@ const loginUser = asyncHandler(async (req, res) => {
       );
 
       res.status(200).json({
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        accessToken,
+        message: 'User logged in successfully',
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          accessToken,
+        },
       });
     } else {
-      res.status(401);
-      throw new Error('email or password is not valid');
+      res.status(401).json({
+        status: 'error',
+        message: 'email or password is not valid',
+      });
     }
   } catch (error) {
     console.log(error);
