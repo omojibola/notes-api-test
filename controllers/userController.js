@@ -18,7 +18,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (userAvailable) {
     res.status(400).json({
       status: 'error',
-      message: 'User already exists',
+      message: 'Email already exists',
     });
   }
 

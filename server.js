@@ -22,6 +22,7 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(express.json());
 app.use('/api/contacts', require('./routes/contactRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/notes', require('./routes/noteRoutes'));
 app.use(errorHandler);
 
 app.listen(port, () => {
