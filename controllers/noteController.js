@@ -4,10 +4,36 @@ const Note = require('../models/noteModel');
 //@desc Get all notes
 //@route GET /api/notes
 //@access private
+
 const getNotes = asyncHandler(async (req, res) => {
-  const notes = await Note.find({ user_id: req.user.id });
-  res.status(200).json({ message: 'Notes fetched successfully', data: notes });
+  const search = req.query.search || '';
+
+  const notes = await Note.find({
+    user_id: req.user.id,
+    note: { $regex: search, $options: 'i' },
+  }).sort({ _id: -1 });
+
+  res.status(200).json({
+    message: 'Notes fetched successfully',
+    data: notes,
+  });
 });
+// const getNotes = asyncHandler(async (req, res) => {
+//   const page = parseInt(req.query.page) - 1 || 0;
+//   const limit = parseInt(req.query.limit) || 10;
+//   const search = req.query.search || '';
+
+//   const notes = await Note.find({
+//     user_id: req.user.id,
+//     note: { $regex: search, $options: 'i' },
+//   })
+//     .skip(page * limit)
+//     .limit(limit);
+//   res.status(200).json({
+//     message: 'Notes fetched successfully',
+//     data: { notes, total, page: page + 1, limit },
+//   });
+// });
 
 //@desc Create New note
 //@route POST /api/notes
